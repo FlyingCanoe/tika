@@ -103,8 +103,13 @@
           <artifactId>chatunitest-maven-plugin</artifactId>
           <version>2.1.1</version>
           <configuration>
-            <apiKeys>${env.OPENAI_API_KEY}</apiKeys>
-            <model>gpt-4o-mini</model>
+            <!-- ChatUniTest talks to the locally running Ollama OpenAI-compatible API. -->
+            <apiKeys>ollama</apiKeys>
+            <model>codeqwen:v1.5-chat</model>
+            <url>http://localhost:11434/v1/chat/completions</url>
+            <testOutput>${project.build.directory}/chatunitest</testOutput>
+            <tmpOutput>${project.build.directory}/chatunitest-info</tmpOutput>
+            <thread>false</thread>
           </configuration>
 
        </plugin>
