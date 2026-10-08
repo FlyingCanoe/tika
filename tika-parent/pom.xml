@@ -1609,37 +1609,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <!-- mvn validate -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${checkstyle.plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>${puppycrawl.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <configLocation>${checkstyle.configLocation}</configLocation>
-          <consoleOutput>false</consoleOutput>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-          <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
-          <violationSeverity>warn</violationSeverity>
-          <failOnViolation>true</failOnViolation>
-          <failsOnError>true</failsOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <id>validate</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 

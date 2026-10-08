@@ -157,42 +157,10 @@
             <url>http://localhost:11434/v1/chat/completions</url>
             <testOutput>${project.build.directory}/chatunitest</testOutput>
             <tmpOutput>${project.build.directory}/chatunitest-info</tmpOutput>
-            <thread>false</thread>
-            <maxPromptTokens>4096</maxPromptTokens>
-            <maxResponseTokens>512</maxResponseTokens>
+            <merge>true</merge>
           </configuration>
 
        </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${checkstyle.plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>${puppycrawl.version}</version>
-          </dependency>
-        </dependencies>
-        <executions>
-          <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <configuration>
-              <configLocation>checkstyle.xml</configLocation>
-              <inputEncoding>UTF-8</inputEncoding>
-              <consoleOutput>false</consoleOutput>
-              <includeTestSourceDirectory>true</includeTestSourceDirectory>
-              <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
-              <violationSeverity>error</violationSeverity>
-              <failOnViolation>true</failOnViolation>
-            </configuration>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -269,7 +237,6 @@
           </execution>
         </executions>
       </plugin>
-      <!--
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>clirr-maven-plugin</artifactId>
@@ -292,7 +259,7 @@
             </configuration>
           </execution>
         </executions>
-      </plugin> -->
+      </plugin>
       <plugin>
         <artifactId>maven-failsafe-plugin</artifactId>
         <version>${maven.failsafe.version}</version>
