@@ -16,12 +16,13 @@
  */
 package org.apache.tika.utils;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Test;
 
-public class StringUtils_isEmpty_0_0_Test {
+public class StringUtilsIsEmptyTest {
 
     @Test
     public void testIsEmpty_withNull() throws Exception {

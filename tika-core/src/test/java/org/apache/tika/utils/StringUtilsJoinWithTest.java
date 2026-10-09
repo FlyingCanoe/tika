@@ -16,33 +16,37 @@
  */
 package org.apache.tika.utils;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class StringUtils_isBlank_1_0_Test {
+import java.util.Arrays;
+import java.util.List;
 
-    @Test
-    public void testIsBlank_NullString() throws Exception {
-        boolean result = StringUtils.isBlank(null);
-        assertTrue(result);
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+
+public class StringUtilsJoinWithTest {
+
+    private List<String> lines;
+
+    @BeforeEach
+    public void setUp() {
+        lines = Arrays.asList("line1", "line2", "line3");
     }
 
     @Test
-    public void testIsBlank_EmptyString() throws Exception {
-        boolean result = StringUtils.isBlank("");
-        assertTrue(result);
+    public void testJoinWith_EmptyList() {
+        assertEquals("", StringUtils.joinWith(",", List.of()));
     }
 
     @Test
-    public void testIsBlank_WhitespaceString() throws Exception {
-        boolean result = StringUtils.isBlank("   ");
-        assertTrue(result);
+    public void testJoinWith_SingleElement() {
+        assertEquals("line1", StringUtils.joinWith(",", List.of("line1")));
     }
 
     @Test
-    public void testIsBlank_NonBlankString() throws Exception {
-        boolean result = StringUtils.isBlank("Hello");
-        assertFalse(result);
+    public void testJoinWith_MultipleElements() {
+        assertEquals("line1,line2,line3", StringUtils.joinWith(",", lines));
     }
 }

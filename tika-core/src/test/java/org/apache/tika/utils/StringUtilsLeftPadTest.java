@@ -16,14 +16,13 @@
  */
 package org.apache.tika.utils;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 
 
-
-public class StringUtils_leftPad_3_1_Test {
+public class StringUtilsLeftPadTest {
 
     @Test
     public void testLeftPadNullString() {
@@ -46,21 +45,21 @@ public class StringUtils_leftPad_3_1_Test {
     @Test
     public void testLeftPadStringWithPadding() {
         String result = StringUtils.leftPad("hello", 10, 'x');
-        assertEquals(result.length(), 10);
+        assertEquals(10, result.length());
         assertEquals("xxxxxhello", result);
     }
 
     @Test
     public void testLeftPadStringWithLargePadding() {
         String result = StringUtils.leftPad("hello", 20, 'x');
-        assertEquals(result.length(), 20);
+        assertEquals(20, result.length());
         assertEquals("xxxxxxxxxxxxxxxhello", result);
     }
 
     @Test
     public void testLeftPadStringWithLargePaddingChar() {
         String result = StringUtils.leftPad("hello", 20, 'a');
-        assertEquals(result.length(), 20);
+        assertEquals(20, result.length());
         assertEquals("aaaaaaaaaaaaaaahello", result);
     }
 
@@ -73,7 +72,7 @@ public class StringUtils_leftPad_3_1_Test {
     @Test
     public void testLeftPadStringWithLargePaddingString() {
         String result = StringUtils.leftPad("hello", 20, "world");
-        assertEquals(result.length(), 20);
+        assertEquals(20, result.length());
         assertEquals("worldworldworldhello", result);
     }
 

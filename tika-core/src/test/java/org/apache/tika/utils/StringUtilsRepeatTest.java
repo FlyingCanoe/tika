@@ -16,12 +16,13 @@
  */
 package org.apache.tika.utils;
 
-import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
+import org.junit.jupiter.api.Test;
 
-public class StringUtils_repeat_5_0_Test {
+public class StringUtilsRepeatTest {
 
     @Test
     public void testRepeat_nullString() {
