@@ -14,39 +14,39 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.tika.utils;
+package org.apache.tika.utils.generated;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.apache.tika.utils.StringUtils;
 
-public class StringUtilsJoinWithTest {
+public class StringUtilsIsBlankTest {
 
-    private List<String> lines;
-
-    @BeforeEach
-    public void setUp() {
-        lines = Arrays.asList("line1", "line2", "line3");
+    @Test
+    public void testIsBlank_NullString() {
+        boolean result = StringUtils.isBlank(null);
+        assertTrue(result);
     }
 
     @Test
-    public void testJoinWith_EmptyList() {
-        assertEquals("", StringUtils.joinWith(",", List.of()));
+    public void testIsBlank_EmptyString() {
+        boolean result = StringUtils.isBlank("");
+        assertTrue(result);
     }
 
     @Test
-    public void testJoinWith_SingleElement() {
-        assertEquals("line1", StringUtils.joinWith(",", List.of("line1")));
+    public void testIsBlank_WhitespaceString() {
+        boolean result = StringUtils.isBlank("   ");
+        assertTrue(result);
     }
 
     @Test
-    public void testJoinWith_MultipleElements() {
-        assertEquals("line1,line2,line3", StringUtils.joinWith(",", lines));
+    public void testIsBlank_NonBlankString() {
+        boolean result = StringUtils.isBlank("Hello");
+        assertFalse(result);
     }
 }

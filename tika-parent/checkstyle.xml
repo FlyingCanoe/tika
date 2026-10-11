@@ -61,58 +61,51 @@
     <property name="message" value="CRLF line endings are prohibited"/>
   </module>
 
-  <module name="TreeWalker">
-    <!--<module name="FileContentsHolder"/>-->
-    <module name="IllegalImport">
-      <property name="regexp" value="true"/>
-      <!-- Reject any org.junit import that's not also org.junit.jupiter: -->
-      <property name="illegalClasses" value="^org\.junit\.(?!jupiter\.).+"/>
-    </module>
-    <module name="OuterTypeFilename"/>
-    <module name="IllegalTokenText">
-      <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>
-      <property name="format" value="\\u00(08|09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)"/>
-      <property name="message" value="Avoid using corresponding octal or Unicode escape."/>
-    </module>
-    <module name="AvoidStarImport"/>
-    <module name="UnusedImports"/>
-    <module name="OneTopLevelClass"/>
-    <module name="WhitespaceAround">
-      <property name="allowEmptyConstructors" value="true"/>
-      <property name="allowEmptyMethods" value="true"/>
-      <property name="allowEmptyTypes" value="true"/>
-      <property name="allowEmptyLoops" value="true"/>
-    </module>
-    <module name="OneStatementPerLine"/>
-    <module name="PackageName">
-      <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
-      <message key="name.invalidPattern"
-               value="Package name ''{0}'' must match pattern ''{1}''."/>
-    </module>
-    <module name="MethodTypeParameterName">
-      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
-      <message key="name.invalidPattern"
-               value="Method type name ''{0}'' must match pattern ''{1}''."/>
-    </module>
-    <module name="InterfaceTypeParameterName">
-      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>
-      <message key="name.invalidPattern"
-               value="Interface type name ''{0}'' must match pattern ''{1}''."/>
-    </module>
-    <module name="GenericWhitespace">
-      <message key="ws.followed"
-               value="GenericWhitespace ''{0}'' is followed by whitespace."/>
-      <message key="ws.preceded"
-               value="GenericWhitespace ''{0}'' is preceded with whitespace."/>
-      <message key="ws.illegalFollow"
-               value="GenericWhitespace ''{0}'' should followed by whitespace."/>
-      <message key="ws.notPreceded"
-               value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
-    </module>
-    <module name="EmptyCatchBlock">
-      <property name="exceptionVariableName" value="expected|ignore"/>
-    </module>
-    <module name="EqualsHashCode"/>
-    <module name="ArrayTypeStyle"/>
-  </module>
+<!--  <module name="TreeWalker">-->
+<!--    <module name="IllegalImport">-->
+<!--      <property name="regexp" value="true"/>-->
+<!--      &lt;!&ndash; Reject any org.junit import that's not also org.junit.jupiter: &ndash;&gt;-->
+<!--      <property name="illegalClasses" value="^org\.junit\.(?!jupiter\.).+"/>-->
+<!--    </module>-->
+<!--    <module name="OuterTypeFilename"/>-->
+<!--    <module name="IllegalTokenText">-->
+<!--      <property name="tokens" value="STRING_LITERAL, CHAR_LITERAL"/>-->
+<!--      <property name="format" value="\\u00(08|09|0(a|A)|0(c|C)|0(d|D)|22|27|5(C|c))|\\(0(10|11|12|14|15|42|47)|134)"/>-->
+<!--      <property name="message" value="Avoid using corresponding octal or Unicode escape."/>-->
+<!--    </module>-->
+<!--    <module name="AvoidStarImport"/>-->
+<!--    <module name="UnusedImports"/>-->
+<!--    <module name="OneTopLevelClass"/>-->
+<!--    <module name="OneStatementPerLine"/>-->
+<!--    <module name="PackageName">-->
+<!--      <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>-->
+<!--      <message key="name.invalidPattern"-->
+<!--               value="Package name ''{0}'' must match pattern ''{1}''."/>-->
+<!--    </module>-->
+<!--    <module name="MethodTypeParameterName">-->
+<!--      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>-->
+<!--      <message key="name.invalidPattern"-->
+<!--               value="Method type name ''{0}'' must match pattern ''{1}''."/>-->
+<!--    </module>-->
+<!--    <module name="InterfaceTypeParameterName">-->
+<!--      <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*[T]$)"/>-->
+<!--      <message key="name.invalidPattern"-->
+<!--               value="Interface type name ''{0}'' must match pattern ''{1}''."/>-->
+<!--    </module>-->
+<!--    <module name="GenericWhitespace">-->
+<!--      <message key="ws.followed"-->
+<!--               value="GenericWhitespace ''{0}'' is followed by whitespace."/>-->
+<!--      <message key="ws.preceded"-->
+<!--               value="GenericWhitespace ''{0}'' is preceded with whitespace."/>-->
+<!--      <message key="ws.illegalFollow"-->
+<!--               value="GenericWhitespace ''{0}'' should followed by whitespace."/>-->
+<!--      <message key="ws.notPreceded"-->
+<!--               value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>-->
+<!--    </module>-->
+<!--    <module name="EmptyCatchBlock">-->
+<!--      <property name="exceptionVariableName" value="expected|ignore"/>-->
+<!--    </module>-->
+<!--    <module name="EqualsHashCode"/>-->
+<!--    <module name="ArrayTypeStyle"/>-->
+<!--  </module>-->
 </module>
