@@ -1,5 +1,3 @@
-
-
 # StringUtils
 
 Les test généré pour les function `isBlank`, `IsEmpty` et `JoinWith`, test de manière adequate
@@ -15,8 +13,8 @@ j'ai dû les corrigés manuellement. Au-delà de cela, il ne test pratiquement a
 Il est aussi important de note que le code de StringUtils contient de nombreuse micro-optimization qui ont
 eté crée à l'époque de java 1.4. Il n'est pas claire si ces optimisations sont encore util
 
-Les tests générés pour StringUtils sont dans le sous-dossier `src/java/org/apache/tika/utils/generated/`
-Les tests manuels pour StringUtils sont dans le fichier `src/java/org/apache/tika/utils/StringUtilsHumanTest.java`
+Les tests générés pour StringUtils sont dans le sous-dossier `tika-core/src/java/org/apache/tika/utils/generated/`
+Les tests manuels pour StringUtils sont dans le fichier `tika-core/src/java/org/apache/tika/utils/StringUtilsHumanTest.java`
 
 ## Test généré
 
