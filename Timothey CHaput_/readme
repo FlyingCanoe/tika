@@ -1,1 +1,15 @@
 
+Pour tika-serilization:
+Pour tika-serilization, les tests existants de JsonMetadataList ne couvrent pas la classe au complet. Ils laissent passer des mutants et ne couvrent pas tous son comportement. Par exemple: GetStreamReadConstraints() n'est pas couvert par les tests et setStreamReadConstraints(StreamReadConstraints) est appeler, mais les tests ne testent pas son effet. De plus, pitest détecte 9 mutants total mais seulement 7 sont tués.
+
+Tests généré par ChatUniTest:
+	Les tests généré par ChatUniTest sont dans le répertoire 
+					tika\tika-serialization\target\chatunitest\tika-parent\tika-serialization
+	
+
+
+
+
+
+
+Je reconnais d'avoir utiliser CHATGPT pour installer et faire fonctionner ChatUniTest. Les tests n'étais pas créé et enregistré d'où l'utilisation de l'IA pour trouver et corriger le problème. Le problème était la carte graphique qui n'étais pas a jour et il manquais Ollama d'installer. 
