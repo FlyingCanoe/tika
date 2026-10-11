@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.junit.jupiter.api.Test;
 
@@ -150,5 +151,26 @@ public class JsonMetadataListTest {
         JsonMetadataList.toJson(list, writer);
         List<Metadata> deserialized = JsonMetadataList.fromJson(new StringReader(writer.toString()));
         assertEquals(list, deserialized);
+    }
+
+    @Test
+    public void testSetStreamReadConstraintsRebuildsMappers() throws Exception {
+        StreamReadConstraints originalConstraints = JsonMetadataList.getStreamReadConstraints();
+        StreamReadConstraints shortStringConstraints = StreamReadConstraints.builder()
+                .maxNestingDepth(10)
+                .maxStringLength(5)
+                .maxNumberLength(500)
+                .build();
+
+        try {
+            JsonMetadataList.setStreamReadConstraints(shortStringConstraints);
+
+            assertEquals(shortStringConstraints, JsonMetadataList.getStreamReadConstraints());
+            JsonMappingException exception = assertThrows(JsonMappingException.class,
+                    () -> JsonMetadataList.fromJson(new StringReader("[{\"key\":\"123456\"}]")));
+            assertTrue(exception.getCause() instanceof com.fasterxml.jackson.core.exc.StreamConstraintsException);
+        } finally {
+            JsonMetadataList.setStreamReadConstraints(originalConstraints);
+        }
     }
 }
