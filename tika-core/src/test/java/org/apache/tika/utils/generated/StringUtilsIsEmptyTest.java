@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.tika.utils;
+package org.apache.tika.utils.generated;
 
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -22,29 +22,37 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-public class StringUtilsIsBlankTest {
+import org.apache.tika.utils.StringUtils;
+
+public class StringUtilsIsEmptyTest {
 
     @Test
-    public void testIsBlank_NullString() throws Exception {
-        boolean result = StringUtils.isBlank(null);
+    public void testIsEmpty_withNull() {
+        // Arrange
+        CharSequence cs = null;
+        // Act
+        boolean result = StringUtils.isEmpty(cs);
+        // Assert
         assertTrue(result);
     }
 
     @Test
-    public void testIsBlank_EmptyString() throws Exception {
-        boolean result = StringUtils.isBlank("");
+    public void testIsEmpty_withEmptyString() {
+        // Arrange
+        CharSequence cs = "";
+        // Act
+        boolean result = StringUtils.isEmpty(cs);
+        // Assert
         assertTrue(result);
     }
 
     @Test
-    public void testIsBlank_WhitespaceString() throws Exception {
-        boolean result = StringUtils.isBlank("   ");
-        assertTrue(result);
-    }
-
-    @Test
-    public void testIsBlank_NonBlankString() throws Exception {
-        boolean result = StringUtils.isBlank("Hello");
+    public void testIsEmpty_withNonEmptyString() {
+        // Arrange
+        CharSequence cs = "Hello";
+        // Act
+        boolean result = StringUtils.isEmpty(cs);
+        // Assert
         assertFalse(result);
     }
 }

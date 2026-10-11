@@ -14,43 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.tika.utils;
+package org.apache.tika.utils.generated;
 
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class StringUtilsIsEmptyTest {
+import org.apache.tika.utils.StringUtils;
 
-    @Test
-    public void testIsEmpty_withNull() throws Exception {
-        // Arrange
-        CharSequence cs = null;
-        // Act
-        boolean result = StringUtils.isEmpty(cs);
-        // Assert
-        assertTrue(result);
+
+public class StringUtilsJoinWithTest {
+
+    private List<String> lines;
+
+    @BeforeEach
+    public void setUp() {
+        lines = Arrays.asList("line1", "line2", "line3");
     }
 
     @Test
-    public void testIsEmpty_withEmptyString() throws Exception {
-        // Arrange
-        CharSequence cs = "";
-        // Act
-        boolean result = StringUtils.isEmpty(cs);
-        // Assert
-        assertTrue(result);
+    public void testJoinWith_EmptyList() {
+        Assertions.assertEquals("", StringUtils.joinWith(",", List.of()));
     }
 
     @Test
-    public void testIsEmpty_withNonEmptyString() throws Exception {
-        // Arrange
-        CharSequence cs = "Hello";
-        // Act
-        boolean result = StringUtils.isEmpty(cs);
-        // Assert
-        assertFalse(result);
+    public void testJoinWith_SingleElement() {
+        assertEquals("line1", StringUtils.joinWith(",", List.of("line1")));
+    }
+
+    @Test
+    public void testJoinWith_MultipleElements() {
+        assertEquals("line1,line2,line3", StringUtils.joinWith(",", lines));
     }
 }
