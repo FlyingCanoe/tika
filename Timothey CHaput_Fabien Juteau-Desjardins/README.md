@@ -369,20 +369,6 @@ mutant qui retourne `null` à sa place était donc non couvert. La deuxième ét
 mais les tests ne vérifiaient pas que les nouvelles contraintes étaient réellement utilisées
 par Jackson. Le mutant qui retire l'appel à `rebuildObjectMappers()` restait vivant.
 
-ChatUniTest est configuré dans `tika-serialization/pom.xml` pour utiliser Ollama localement.
-La commande utilisée est :
-
-```powershell
-.\mvnw.cmd -pl :tika-serialization chatunitest:class "-DselectClass=JsonMetadataList" -DtestNumber=1 -DmaxRounds=2 -Dthread=false
-```
-Les tests générés devraient être placés dans :
-
-tika-serialization/target/chatunitest/tika-parent/tika-serialization/
-
-Les tests rejetées et leurs messages de compilation sont conservés dans :
-
-tika-serialization/target/chatunitest-info/tika-parent/tika-serialization/error-message/
-
 
 ## Tests générés
 
