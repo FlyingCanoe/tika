@@ -450,10 +450,6 @@ tests.
 
 PIT est installé dans `tika-serialization/pom.xml`.
 
-Le rapport est généré dans :
-
-tika-serialization/target/pit-reports/org.apache.tika.serialization/JsonMetadataList.java.html
-
 ### Résultat PIT sans les tests ajoutés
 
 Avant l'ajout des deux tests manuels, PIT génère 9 mutants : 7 sont tués, 1 est vivant et
@@ -561,19 +557,7 @@ les autres tests.
 
 ## Analyse PIT avec les nouveaux tests
 
-PIT est configuré dans `tika-serialization/pom.xml`. La commande utilisée pour mesurer les
-tests manuels (avec les tests originaux de `JsonMetadataListTest`) est :
-
-```powershell
-.\mvnw.cmd -pl :tika-serialization org.pitest:pitest-maven:mutationCoverage "-DtargetClasses=org.apache.tika.serialization.JsonMetadataList" "-DtargetTests=org.apache.tika.serialization.JsonMetadataListTest"
-```
-
-La commande utilisée pour mesurer les tests corrigés issus des scénarios ChatUniTest seuls
-est :
-
-```powershell
-.\mvnw.cmd -pl :tika-serialization org.pitest:pitest-maven:mutationCoverage "-DtargetClasses=org.apache.tika.serialization.JsonMetadataList" "-DtargetTests=org.apache.tika.serialization.JsonMetadataListFromJsonChatUniTestCorrectedTest"
-```
+Après l'ajout de tous les tests On passe a 97% de couverture et on tue tous les mutants créés.
 
 | Jeu de tests | Couverture de lignes | Mutants tués | Score de mutation |
 | --- | ---: | ---: | ---: |
