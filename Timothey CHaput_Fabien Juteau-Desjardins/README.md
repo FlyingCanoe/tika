@@ -354,6 +354,15 @@ Dans 2 cas, il s'agit de mutant qui produise des programs strictement équivalan
 Dans 4 cas, il s'agit de mutant qui font en sorte qu'une optimisation prévue n'est pas suivie,
 mais qui fournissent le même résulta.
 
+## Analyse PIT
+Voici les résultats de l'analyse faite par pitest selon les tests inclut pour la class StringUtils
+
+| Test inclue                   | "Line Covrage" | "Mutation Covrage" | "Test Strength" |
+|-------------------------------|----------------|--------------------|-----------------|
+| Test origineux                | 15% (11/71)    | 10% (7/70)         | 88%  (7 / 8)    |
+| Test origineux + test générer | 77% (55/71)    | 64% (45/70)        | 83%  (45 / 54)  |
+| Tout les test                 | 99% (70/71)    | 91% (64/70)        | 91%  (64 / 70)  |
+
 
 # Pour tika-serilisation
 
