@@ -464,14 +464,14 @@ PIT est installé dans `tika-serialization/pom.xml`.
 Avant l'ajout des deux tests manuels, PIT génère 9 mutants : 7 sont tués, 1 est vivant et
 1 est non couvert. Le score de mutation est donc de **78 %**.
 
-| Mesure PIT | Résultat sans les tests ajoutés |
-| --- | --- |
-| Couverture de lignes | 34/36 (94 %) |
-| Mutants générés | 9 |
-| Mutants tués | 7 |
-| Mutants vivants | 1 |
-| Mutants non couverts | 1 |
-| Score de mutation | 78 % |
+| Mesure PIT           | Résultat sans les tests ajoutés |
+|----------------------|---------------------------------|
+| Couverture de lignes | 34/36 (94 %)                    |
+| Mutants générés      | 9                               |
+| Mutants tués         | 7                               |
+| Mutants vivants      | 1                               |
+| Mutants non couverts | 1                               |
+| Score de mutation    | 78 %                            |
 
 Le mutant non couvert est dans `getStreamReadConstraints`. Il remplace la valeur retournée
 par `null`. Il est non couvert puisqu'aucun test original ne demande la valeur des
