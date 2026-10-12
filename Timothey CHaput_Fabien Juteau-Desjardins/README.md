@@ -1,3 +1,4 @@
+# Pour tika-core
 # StringUtils
 
 Les test généré pour les function `isBlank`, `IsEmpty` et `JoinWith`, test de manière adequate
@@ -353,3 +354,4 @@ Dans 2 cas, il s'agit de mutant qui produise des programs strictement équivalan
 Dans 4 cas, il s'agit de mutant qui font en sorte qu'une optimisation prévue n'est pas suivie,
 mais qui fournissent le même résulta.
 
+# Pour tika-serilisation

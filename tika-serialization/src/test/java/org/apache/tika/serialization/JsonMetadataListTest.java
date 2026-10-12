@@ -154,6 +154,24 @@ public class JsonMetadataListTest {
     }
 
     @Test
+    public void testGetStreamReadConstraintsReturnsConfiguredConstraints() {
+        StreamReadConstraints originalConstraints = JsonMetadataList.getStreamReadConstraints();
+        StreamReadConstraints configuredConstraints = StreamReadConstraints.builder()
+                .maxNestingDepth(10)
+                .maxStringLength(5)
+                .maxNumberLength(500)
+                .build();
+
+        try {
+            JsonMetadataList.setStreamReadConstraints(configuredConstraints);
+
+            assertEquals(configuredConstraints, JsonMetadataList.getStreamReadConstraints());
+        } finally {
+            JsonMetadataList.setStreamReadConstraints(originalConstraints);
+        }
+    }
+
+    @Test
     public void testSetStreamReadConstraintsRebuildsMappers() throws Exception {
         StreamReadConstraints originalConstraints = JsonMetadataList.getStreamReadConstraints();
         StreamReadConstraints shortStringConstraints = StreamReadConstraints.builder()
@@ -165,7 +183,6 @@ public class JsonMetadataListTest {
         try {
             JsonMetadataList.setStreamReadConstraints(shortStringConstraints);
 
-            assertEquals(shortStringConstraints, JsonMetadataList.getStreamReadConstraints());
             JsonMappingException exception = assertThrows(JsonMappingException.class,
                     () -> JsonMetadataList.fromJson(new StringReader("[{\"key\":\"123456\"}]")));
             assertTrue(exception.getCause() instanceof com.fasterxml.jackson.core.exc.StreamConstraintsException);
