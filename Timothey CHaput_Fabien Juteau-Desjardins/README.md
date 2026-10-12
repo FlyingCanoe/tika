@@ -354,4 +354,258 @@ Dans 2 cas, il s'agit de mutant qui produise des programs strictement équivalan
 Dans 4 cas, il s'agit de mutant qui font en sorte qu'une optimisation prévue n'est pas suivie,
 mais qui fournissent le même résulta.
 
+
 # Pour tika-serilisation
+
+# JsonMetadataList
+
+La classe choisie est `JsonMetadataList`. Elle avait déjà des tests dans
+`JsonMetadataListTest`, mais ces tests ne couvraient pas complètement la classe. L'analyse
+PIT initiale a mesuré 34 lignes couvertes sur 36, soit 94 %.
+
+Les méthodes qui nous intéressent sont `getStreamReadConstraints` et
+`setStreamReadConstraints`. La première n'était jamais appelée par les tests originaux : le
+mutant qui retourne `null` à sa place était donc non couvert. La deuxième était appelée,
+mais les tests ne vérifiaient pas que les nouvelles contraintes étaient réellement utilisées
+par Jackson. Le mutant qui retire l'appel à `rebuildObjectMappers()` restait vivant.
+
+ChatUniTest est configuré dans `tika-serialization/pom.xml` pour utiliser Ollama localement.
+La commande utilisée est :
+
+```powershell
+.\mvnw.cmd -pl :tika-serialization chatunitest:class "-DselectClass=JsonMetadataList" -DtestNumber=1 -DmaxRounds=2 -Dthread=false
+```
+Les tests générés devraient être placés dans :
+
+tika-serialization/target/chatunitest/tika-parent/tika-serialization/
+
+Les tests rejetées et leurs messages de compilation sont conservés dans :
+
+tika-serialization/target/chatunitest-info/tika-parent/tika-serialization/error-message/
+
+
+## Tests générés
+
+ChatUniTest a tenté de produire quatre tests pour `toJson` et deux tests pour `fromJson`.
+Les six tests ont échoué à la compilation. Aucun test valide pour `JsonMetadataList` n'a donc
+été conservé dans le dossier de sortie. Il se sont tous retrouver dans les tests rejetées.
+
+ChatUniTest a aussi ignoré les méthodes `getStreamReadConstraints` et
+`setStreamReadConstraints`. Il ne pouvait donc pas générer directement un test pour les deux
+mutants que nous voulions tuer.
+
+Les tests rejetés initiale utilisait Mockito pour simuler `JsonMetadataList`, alors que les
+méthodes étudiées sont statiques. Elle référençait aussi des champs inexistants
+(`streamReadConstraints` et `PRETTY_PRINT`), des constantes Jackson inexistantes et elle ne
+contenait pas d'oracle fonctionnel pertinent.
+
+Les corrections suivantes ont été nécessaires :
+
+1. retrait des imports, mocks et configurations Mockito inutilisables ;
+2. remplacement du mock par des appels aux méthodes statiques de `JsonMetadataList` ;
+3. création d'une vraie instance `StreamReadConstraints` avec une limite de chaîne de cinq
+   caractères ;
+4. ajout d'un oracle qui vérifie la valeur retournée par `getStreamReadConstraints()` ;
+5. ajout d'un oracle qui vérifie que `fromJson` applique la nouvelle contrainte ;
+6. correction du cas `fromJson(null)` : le contrat de la méthode est de retourner `null`,
+   non de lancer une exception ;
+7. correction des scénarios `toJson` par un aller-retour JSON réel et par une vérification du
+   formatage quand `prettyPrint` vaut `true`.
+
+Les tests corrigés sont donc issus des scénarios proposés par ChatUniTest, mais leur
+correction est substantielle. On ne peux plus dire que ce sont des tests généré par l'ia mais plutôt ce sont des tests proposé par l'ia.
+
+Les tests corrigés sont dans :
+
+```text
+tika-serialization/src/test/java/org/apache/tika/serialization/
+JsonMetadataListFromJsonChatUniTestCorrectedTest.java
+```
+
+## Tests corrigés
+
+La classe `JsonMetadataListFromJsonChatUniTestCorrectedTest` contient cinq tests "générer" par l'ia.
+
+### testGetStreamReadConstraintsReturnsConfiguredConstraints
+
+Ce test configure des contraintes de lecture puis vérifie que
+`getStreamReadConstraints()` retourne la même contrainte. Il tue le mutant qui remplace la
+valeur de retour par `null`.
+
+### testFromJsonUsesUpdatedStreamReadConstraints
+
+Ce test fixe une limite de cinq caractères et tente de lire la valeur JSON `"123456"`, qui
+en contient six. L'oracle attend une `JsonMappingException` dont la cause est une
+`StreamConstraintsException`. Si le mutant supprime `rebuildObjectMappers()`, le mapper
+garde l'ancienne limite et la lecture réussit : le test échoue donc et tue le mutant.
+
+### testFromJsonWithNullReader
+
+Ce test corrige l'attente erronée de l'IA. `fromJson(null)` doit retourner `null`. Il tue le
+mutant qui remplace ce retour par une liste vide.
+
+### testToJsonRoundTrip
+
+Ce test sérialise une liste contenant un `Metadata("key", "value")`, puis la relit. L'oracle
+compare la liste désérialisée à la liste originale. Il détecte les mutants supprimant les
+appels à `ObjectMapper.writeValue`, `ObjectWriter.writeValue` et la délégation de `toJson`.
+
+### testToJsonPrettyPrintsWhenRequested
+
+Ce test demande explicitement le formatage JSON puis vérifie la présence d'un saut de ligne.
+Il tue le mutant qui inverse la condition `prettyPrint`.
+
+Tous les tests restaurent les contraintes globales dans un bloc `finally` lorsqu'ils les
+modifient. Ils ne laissent donc pas de configuration qui pourrait influencer les autres
+tests.
+
+
+## Analyse PIT avec les tests originaux
+
+PIT est installé dans `tika-serialization/pom.xml`.
+
+Le rapport est généré dans :
+
+tika-serialization/target/pit-reports/org.apache.tika.serialization/JsonMetadataList.java.html
+
+### Résultat PIT sans les tests ajoutés
+
+Avant l'ajout des deux tests manuels, PIT génère 9 mutants : 7 sont tués, 1 est vivant et
+1 est non couvert. Le score de mutation est donc de **78 %**.
+
+| Mesure PIT | Résultat sans les tests ajoutés |
+| --- | --- |
+| Couverture de lignes | 34/36 (94 %) |
+| Mutants générés | 9 |
+| Mutants tués | 7 |
+| Mutants vivants | 1 |
+| Mutants non couverts | 1 |
+| Score de mutation | 78 % |
+
+Le mutant non couvert est dans `getStreamReadConstraints`. Il remplace la valeur retournée
+par `null`. Il est non couvert puisqu'aucun test original ne demande la valeur des
+contraintes.
+
+Le mutant vivant est dans `setStreamReadConstraints`. Il retire l'appel à
+`rebuildObjectMappers()`. La variable qui contient les contraintes est alors modifiée, mais
+les `ObjectMapper` utilisés pour lire le JSON gardent les anciennes contraintes. Les tests
+originaux ne rendaient pas cette différence observable.
+
+## Tests créés manuellement
+
+Les tests manuels ajoutés sont dans :
+
+
+tika-serialization/src/test/java/org/apache/tika/serialization/JsonMetadataListTest.java
+
+Ils répondent directement aux deux faiblesses révélées par la première analyse PIT : un
+mutant vivant dans `setStreamReadConstraints(...)` et une méthode non couverte,
+`getStreamReadConstraints()`.
+
+### getStreamReadConstraints
+
+Le test `testGetStreamReadConstraintsReturnsConfiguredConstraints` cible directement
+`getStreamReadConstraints`.
+
+```java
+@Test
+public void testGetStreamReadConstraintsReturnsConfiguredConstraints() {
+    StreamReadConstraints originalConstraints = JsonMetadataList.getStreamReadConstraints();
+    StreamReadConstraints configuredConstraints = StreamReadConstraints.builder()
+            .maxNestingDepth(10)
+            .maxStringLength(5)
+            .maxNumberLength(500)
+            .build();
+
+    try {
+        JsonMetadataList.setStreamReadConstraints(configuredConstraints);
+        assertEquals(configuredConstraints, JsonMetadataList.getStreamReadConstraints());
+    } finally {
+        JsonMetadataList.setStreamReadConstraints(originalConstraints);
+    }
+}
+```
+
+Son intention est de vérifier le contrat de l'accesseur : après avoir configuré une contrainte,
+la même contrainte doit être retournée. Les nombres 10, 5 et 500 sont des valeurs valides de
+construction ; seule l'identité logique de la contrainte est importante ici. L'oracle compare
+la contrainte configurée à celle retournée. Il tue donc le mutant qui remplace le retour par
+`null`.
+
+### setStreamReadConstraints
+
+Le test `testSetStreamReadConstraintsRebuildsMappers` cible l'effet de
+`setStreamReadConstraints` sur les `ObjectMapper`.
+
+```java
+@Test
+public void testSetStreamReadConstraintsRebuildsMappers() throws Exception {
+    StreamReadConstraints originalConstraints = JsonMetadataList.getStreamReadConstraints();
+    StreamReadConstraints shortStringConstraints = StreamReadConstraints.builder()
+            .maxNestingDepth(10)
+            .maxStringLength(5)
+            .maxNumberLength(500)
+            .build();
+
+    try {
+        JsonMetadataList.setStreamReadConstraints(shortStringConstraints);
+
+        JsonMappingException exception = assertThrows(JsonMappingException.class,
+                () -> JsonMetadataList.fromJson(new StringReader("[{\"key\":\"123456\"}]")));
+        assertTrue(exception.getCause()
+                instanceof com.fasterxml.jackson.core.exc.StreamConstraintsException);
+    } finally {
+        JsonMetadataList.setStreamReadConstraints(originalConstraints);
+    }
+}
+```
+
+L'intention du test est de vérifier que la contrainte fournie est vraiment appliquée pendant
+la lecture JSON.
+
+La limite est de cinq caractères et la valeur JSON choisie en contient six (`"123456"`).
+Cette différence d'un seul caractère est volontaire : elle isole exactement la limite qui
+doit être vérifiée.
+
+L'oracle attend une `JsonMappingException` dont la cause est une
+`StreamConstraintsException`. Sans l'appel à `rebuildObjectMappers`, l'ancien mapper garde
+la limite par défaut et lit la chaîne de six caractères sans erreur. Le test échoue donc avec
+le mutant et le tue. Le bloc `finally` remet les contraintes originales pour ne pas affecter
+les autres tests.
+
+## Analyse PIT avec les nouveaux tests
+
+PIT est configuré dans `tika-serialization/pom.xml`. La commande utilisée pour mesurer les
+tests manuels (avec les tests originaux de `JsonMetadataListTest`) est :
+
+```powershell
+.\mvnw.cmd -pl :tika-serialization org.pitest:pitest-maven:mutationCoverage "-DtargetClasses=org.apache.tika.serialization.JsonMetadataList" "-DtargetTests=org.apache.tika.serialization.JsonMetadataListTest"
+```
+
+La commande utilisée pour mesurer les tests corrigés issus des scénarios ChatUniTest seuls
+est :
+
+```powershell
+.\mvnw.cmd -pl :tika-serialization org.pitest:pitest-maven:mutationCoverage "-DtargetClasses=org.apache.tika.serialization.JsonMetadataList" "-DtargetTests=org.apache.tika.serialization.JsonMetadataListFromJsonChatUniTestCorrectedTest"
+```
+
+| Jeu de tests | Couverture de lignes | Mutants tués | Score de mutation |
+| --- | ---: | ---: | ---: |
+| Tests originaux | 34/36 (94 %) | 7/9 | 78 % |
+| Sorties brutes de ChatUniTest | non applicable : elles ne compilent pas | 0 | non applicable |
+| Tests originaux + 2 tests manuels | 35/36 (97 %) | 9/9 | 100 % |
+| Tests ChatUniTest corrigés | 35/36 (97 %) | 9/9 | 100 % |
+
+Les deux tests manuels font passer le score de 78 % à 100 % :
+
+- `testGetStreamReadConstraintsReturnsConfiguredConstraints` tue le mutant de retour
+  `null` de `getStreamReadConstraints()` ;
+- `testSetStreamReadConstraintsRebuildsMappers` tue le mutant qui retire
+  `rebuildObjectMappers()` de `setStreamReadConstraints(...)`.
+
+PIT confirme donc 9 mutants tués sur 9 avec les tests originaux complétés par les deux tests
+manuels. Les cinq tests corrigés issus des propositions ChatUniTest atteignent aussi 9/9
+lorsqu'ils sont exécutés seuls. Aucun mutant vivant ou non couvert ne reste dans ces deux
+analyses.
+
+J'ai utiliser ChatGPT pour faire fonctionner ChatUniTest parce que aucun tests n'était générer car ma carte graphique n'était pas mise a jour (je pensait qu'elle l'était) et il manquait Ollama pour que ChatUniTest fonctionne. Aussi, j'ai utiliser l'ia pour repasser après moi pour faire le rapport pour la correction d'orthographe et une meilleur structure.
