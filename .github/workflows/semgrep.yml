@@ -1,4 +1,6 @@
 name: Semgrep
+permissions:
+  contents: read
 on:
   pull_request: {}
   push:
@@ -9,13 +11,37 @@ jobs:
   semgrep:
     name: Semgrep Scan
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     container:
       image: semgrep/semgrep
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Run Semgrep
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          cd tika-core
-          semgrep scan --config p/default --error
+          set -euo pipefail
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          baseline=()
+          if [[ -n "$BASE_SHA" && ! "$BASE_SHA" =~ ^0+$ ]]; then
+            git cat-file -e "$BASE_SHA^{commit}"
+            baseline=(--baseline-commit "$BASE_SHA")
+          else
+            echo "No previous commit available: running a full blocking scan."
+          fi
+          semgrep scan --config p/default --strict --error --metrics off \
+            "${baseline[@]}" --json-output /tmp/semgrep-new.json \
+            tika-core/src/main/java tika-serialization/src/main/java
+
+      - name: Save Semgrep report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-new-findings
+          path: /tmp/semgrep-new.json
+          if-no-files-found: warn
