@@ -46,5 +46,12 @@ jobs:
           java-version: ${{ matrix.java }}
           cache: 'maven'
       - name: Build with Maven
+        id: maven
         working-directory: 'tika build dir'
         run: mvn clean test install javadoc:aggregate -Pci -Pe2e -B "-Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
+
+      - name: Rickroll after a test failure
+        if: ${{ failure() && steps.maven.outcome == 'failure' }}
+        uses: './tika build dir/.github/actions/rickroll'
+        with:
+          report-root: ${{ github.workspace }}/tika build dir

@@ -1,0 +1,43 @@
+name: Rickroll on failed tests
+description: Publish a musical consolation when Maven test reports contain failures.
+inputs:
+  report-root:
+    description: Directory containing the Maven modules
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Check test reports and rickroll
+      shell: pwsh
+      env:
+        REPORT_ROOT: ${{ inputs.report-root }}
+      run: |
+        $reports = Get-ChildItem -LiteralPath $env:REPORT_ROOT -Recurse -File -Filter 'TEST-*.xml' |
+          Where-Object { $_.Directory.Name -in @('surefire-reports', 'failsafe-reports') }
+        $failed = $false
+        foreach ($report in $reports) {
+          try {
+            [xml]$xml = Get-Content -LiteralPath $report.FullName -Raw
+            if ($xml.SelectNodes('//testcase/failure | //testcase/error').Count -gt 0) {
+              $failed = $true
+              break
+            }
+          } catch {
+            Write-Warning "Unable to read test report: $($report.Name)"
+          }
+        }
+        if ($failed) {
+          @'
+        ## Un test est tombé… Rick prend le relais 🎵
+
+        [▶ Voir l'extrait — de 0:21 à 0:46](https://www.youtube.com/embed/IQOGP9w0FjM?start=21&end=46&autoplay=1)
+
+        Clique pour lancer l'extrait de 0:21 à 0:46. Si ton navigateur bloque la lecture automatique, appuie sur Lecture.
+
+        Tika extrait les métadonnées. Rick extrait un sourire.
+        Le build reste rouge : la musique ne corrige pas les bugs !
+        '@ | Out-File -LiteralPath $env:GITHUB_STEP_SUMMARY -Append -Encoding utf8
+          Write-Output '::notice title=Rickroll (0:21–0:46)::https://www.youtube.com/embed/IQOGP9w0FjM?start=21&end=46&autoplay=1'
+        } else {
+          Write-Output 'No failed test case found: skipping the rickroll.'
+        }
