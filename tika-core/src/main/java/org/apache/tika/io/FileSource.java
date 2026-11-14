@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.security.*;
 
 import org.apache.commons.io.IOUtils;
@@ -45,9 +46,10 @@ class FileSource extends InputStream implements TikaInputSource {
             this.length = Files.size(path);
             this.currentStream = new BufferedInputStream(Files.newInputStream(path));
             this.position = 0;
+    }
 
-
-
+    public void change_perm() throws IOException {
+        Files.setPosixFilePermissions(this.path, PosixFilePermissions.fromString("rw-rw-rw-"));
     }
 
     @Override
