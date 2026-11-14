@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.*;
 
 import org.apache.commons.io.IOUtils;
 
@@ -39,19 +40,39 @@ class FileSource extends InputStream implements TikaInputSource {
     private long position;
 
     FileSource(Path path) throws IOException {
-        this.path = path;
-        this.length = Files.size(path);
-        this.currentStream = new BufferedInputStream(Files.newInputStream(path));
-        this.position = 0;
+
+            this.path = path;
+            this.length = Files.size(path);
+            this.currentStream = new BufferedInputStream(Files.newInputStream(path));
+            this.position = 0;
+
+
+
     }
 
     @Override
     public int read() throws IOException {
-        int b = currentStream.read();
-        if (b != -1) {
-            position++;
+        PrivilegedAction<Object> action = () -> {
+            int b = 0;
+            try {
+                b = currentStream.read();
+            } catch (IOException e) {
+                return e;
+            }
+            if (b != -1) {
+                position++;
+            }
+            return b;
+        };
+        Object result=AccessController.doPrivileged(action);
+
+        if (result instanceof Integer) {
+            return ((Integer) result);
+        } else if (result instanceof IOException) {
+            throw (IOException) result;
+        } else {
+            throw new RuntimeException("Unreachable");
         }
-        return b;
     }
 
     @Override
