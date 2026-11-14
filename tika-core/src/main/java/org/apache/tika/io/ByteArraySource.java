@@ -18,6 +18,7 @@ package org.apache.tika.io;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,6 +47,11 @@ class ByteArraySource extends InputStream implements TikaInputSource {
         this.tmp = tmp;
         this.position = 0;
         this.spilledPath = null;
+    }
+
+    public Object deserialise() throws IOException, ClassNotFoundException {
+        ObjectInputStream in = new ObjectInputStream(this);
+        return in.readObject();
     }
 
     @Override
