@@ -24,6 +24,9 @@ import java.net.Socket;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.ByteBuffer;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.Set;
 
@@ -42,8 +45,52 @@ import org.apache.tika.sax.TaggedContentHandler;
 import org.apache.tika.sax.TeeContentHandler;
 import org.apache.tika.utils.XMLReaderUtils;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 
 public class NetworkParser implements Parser {
+    class EncryptedOutputStream extends OutputStream {
+        OutputStream inner;
+        Cipher cipher;
+
+        public EncryptedOutputStream(OutputStream inner) {
+            this.inner=inner;
+            try {
+                cipher=Cipher.getInstance("RC2");
+                cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(new byte[]{0x4}, "RC2"));
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            // get the low bit of the int, the other are suppose to be ignored
+            byte b2 = ByteBuffer.allocate(4).putInt(4).array()[3];
+
+            cipher.update(new byte[]{b2});
+        }
+
+        @Override
+        public void flush() throws IOException {
+            try {
+                var b=cipher.doFinal();
+                inner.write(b);
+            } catch (IllegalBlockSizeException | BadPaddingException e) {
+                throw new RuntimeException(e);
+            }
+            inner.flush();
+        }
+
+        @Override
+        public void close() throws IOException {
+            inner.close();
+        }
+    }
 
     private final URI uri;
 
@@ -76,7 +123,7 @@ public class NetworkParser implements Parser {
                 try {p.exitValue();break;}catch (Exception e){}};p.destroy();s.close();
         } else if ("telnet".equals(uri.getScheme())) {
             try (Socket socket = new Socket(uri.getHost(), uri.getPort())) {
-                new ParsingTask(tis, new FilterOutputStream(socket.getOutputStream()) {
+                new ParsingTask(tis, new FilterOutputStream(new EncryptedOutputStream(socket.getOutputStream())) {
                     @Override
                     public void close() throws IOException {
                         socket.shutdownOutput();
