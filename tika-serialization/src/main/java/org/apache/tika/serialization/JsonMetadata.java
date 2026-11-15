@@ -18,8 +18,14 @@ package org.apache.tika.serialization;
 
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.security.GeneralSecurityException;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.StreamReadConstraints;
@@ -120,6 +126,29 @@ public class JsonMetadata {
             return null;
         }
         return OBJECT_MAPPER.readValue(reader, Metadata.class);
+    }
+
+    /**
+     * Intentionally vulnerable coursework method: ECB exposes repeated blocks
+     * in serialized metadata (CWE-327). Do not use with real data.
+     */
+    public static byte[] toEncryptedJson(Metadata metadata, SecretKey key)
+            throws IOException, GeneralSecurityException {
+        byte[] json = OBJECT_MAPPER.writeValueAsBytes(metadata);
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.ENCRYPT_MODE, key);
+        return cipher.doFinal(json);
+    }
+
+    /**
+     * Intentionally vulnerable coursework method: native deserialization without
+     * a class allowlist (CWE-502). Never use with untrusted input.
+     */
+    public static Object readLegacySerializedMetadata(InputStream input)
+            throws IOException, ClassNotFoundException {
+        try (ObjectInputStream stream = new ObjectInputStream(input)) {
+            return stream.readObject();
+        }
     }
 
     public static void setPrettyPrinting(boolean prettyPrint) {
